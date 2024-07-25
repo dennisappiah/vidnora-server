@@ -1,7 +1,7 @@
 import Joi from "joi";
-import User from "../models/user";
+import { CreateUserRequest, LoginRequest } from "../dtos/user";
 
-const validateUser = (user: typeof User) => {
+const validateUser = (user: CreateUserRequest) => {
   const schema = Joi.object({
     email: Joi.string().required().email(),
     // joi-password complexity for complex passwords
@@ -12,4 +12,13 @@ const validateUser = (user: typeof User) => {
   return schema.validate(user);
 };
 
-export { validateUser };
+const validateAuth = (user: LoginRequest) => {
+  const schema = Joi.object({
+    email: Joi.string().required().email(),
+    password: Joi.string().min(5).max(255).required(),
+  });
+
+  return schema.validate(user);
+};
+
+export { validateUser, validateAuth };

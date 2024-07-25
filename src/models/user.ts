@@ -5,7 +5,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   isAdmin: boolean;
-  //roles
+  //role
   // operations
 }
 
