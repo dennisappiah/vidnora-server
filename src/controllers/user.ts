@@ -44,11 +44,7 @@ const registerUser = async (
   }
 };
 
-const authenticateUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const logInUser = async (req: Request, res: Response, next: NextFunction) => {
   // validate request body
   const { error } = validateAuth(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -79,7 +75,7 @@ const authenticateUser = async (
   res.status(200).json({ status: "Logged in successfully!", token: token });
 };
 
-const logUserOut = async (req: Request, res: Response, next: NextFunction) => {
+const logOutUser = async (req: Request, res: Response, next: NextFunction) => {
   // Find and delete the session
   const session = await Session.findOneAndDelete({ userId: req.user?._id });
 
@@ -96,4 +92,4 @@ const logUserOut = async (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({ message: "Logged out successfully!" });
 };
 
-export { registerUser, authenticateUser, logUserOut };
+export { registerUser, logInUser, logOutUser };

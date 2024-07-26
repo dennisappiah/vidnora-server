@@ -3,24 +3,30 @@ import { setUpDatabase } from "./database";
 import dotenv from "dotenv";
 import { handleErr } from "./middleware/handle-error";
 import { setUpRoutes } from "./routes";
+import cookieParser from "cookie-parser";
+import authenticate from "./middleware/auth-middleware";
 
 // load env variable
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3002;
 
 const server = express();
 
-// use the body parser middleware
+// Middleware for parsing JSON and cookies
 server.use(express.json());
+server.use(cookieParser());
 
-// use error handling middleware
-server.use(handleErr);
+// Authentication middleware
+server.use(authenticate);
 
-// set up routes
+// Set up routes
 setUpRoutes(server);
 
-// set up database
+// Global error handling
+server.use(handleErr);
+
+// Set up database
 setUpDatabase();
 
 server.listen(PORT, () => {

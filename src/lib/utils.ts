@@ -44,18 +44,18 @@ const verifyPassword = async (
 // generating auth token for user
 const generateToken = (user: any) => {
   const payload = {
-    id: user._id,
+    _id: user._id,
     name: user.name,
     email: user.email,
     isAdmin: user.isAdmin,
   };
 
   // Options for the token
-  // const options = {
-  //   expiresIn: "1h",
-  // };
+  const options = {
+    expiresIn: "1h",
+  };
 
-  const token = jwt.sign(payload, secretKey);
+  const token = jwt.sign(payload, secretKey, options);
 
   return token;
 };
