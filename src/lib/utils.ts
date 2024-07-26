@@ -6,11 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const secretKey = process.env.SECRET_KEY;
-
-if (!secretKey) {
-  throw new Error("SECRET_KEY environment variable is not defined");
-}
+const secretKey = process.env.SECRET_KEY as string;
 
 // deleting folder
 const deleteFolder = async (folderPath: string) => {
@@ -55,11 +51,11 @@ const generateToken = (user: any) => {
   };
 
   // Options for the token
-  const options = {
-    expiresIn: "1h",
-  };
+  // const options = {
+  //   expiresIn: "1h",
+  // };
 
-  const token = jwt.sign(payload, secretKey, options);
+  const token = jwt.sign(payload, secretKey);
 
   return token;
 };

@@ -4,6 +4,7 @@ import { generateToken, hashPassword, verifyPassword } from "../lib/utils";
 import _ from "lodash";
 import { validateUser, validateAuth } from "../lib/validate-request";
 import { CreateUserRequest, LoginRequest } from "../dtos/user";
+import Session from "../models/session";
 
 const registerUser = async (
   req: Request,
@@ -31,7 +32,7 @@ const registerUser = async (
     // hash password
     newUser.password = await hashPassword(newUser.password);
 
-    // save new user
+    // save new user to db
     await newUser.save();
 
     res.status(201).json({
@@ -65,7 +66,34 @@ const authenticateUser = async (
   // generate token for user
   const token = generateToken(user);
 
-  res.status(200).json({ status: "success", token: token });
+  // create new session
+  const session = new Session({
+    userId: user.id,
+    token: token,
+  });
+
+  // save session to db
+  await session.save();
+
+  res.setHeader("Set-Cookie", `token=${token}; Path=/;`);
+  res.status(200).json({ status: "Logged in successfully!", token: token });
 };
 
-export { registerUser, authenticateUser };
+const logUserOut = async (req: Request, res: Response, next: NextFunction) => {
+  // Find and delete the session
+  const session = await Session.findOneAndDelete({ userId: req.user?._id });
+
+  if (!session) {
+    return res.status(404).json({ message: "Session not found" });
+  }
+
+  // Clear the authentication token
+  res.setHeader(
+    "Set-Cookie",
+    `token=deleted; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure`
+  );
+
+  res.status(200).json({ message: "Logged out successfully!" });
+};
+
+export { registerUser, authenticateUser, logUserOut };
